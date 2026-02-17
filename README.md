@@ -13,9 +13,9 @@ Primary server QOL script.
 Features: core tweaks and nuke-related behavior.  
 Status: mostly working. Killfeed handling is currently broken.
 
-### scripts\mp\norpg4bots.gsc
-Goal: remove launchers from bots when they join.  
-Status: not working correctly. Join handling or weapon strip logic needs rework.
+### scripts\mp\bot-speak.gsc.gsc
+Goal: add chatter from bots to the endgame.  
+Status: Working.
 
 ## Stability Notes
 - Expect bugs and edge cases  
