@@ -1,3 +1,5 @@
+// Sript By MrFluff
+// https://github.com/NFLD99/Fluff_T6_Scripts
 init()
 {
     level.bone_threshold = 70;
@@ -141,7 +143,7 @@ sendBoneAnalysisWebhook(flaggedBone, flagPercent)
     data["embeds"][0] = embed;
     data["username"] = "Accuracy Watchdog";
     data["avatar_url"] = "https://static.wikia.nocookie.net/callofduty/images/a/a9/Tactical_Nuke_inventory_icon_MW2.gif";
-    url = "https://discord.com/api/webhooks/[REDACTED]/[REDACTED]";
+    url = "https://discord.com/api/webhooks/REDACTED";
     req = httpPost(url, jsonSerialize(data, 0), headers);
     req waittill("done", result);
     if(flaggedBone != "TEST_RUN")
