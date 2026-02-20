@@ -304,7 +304,7 @@ sendNukeWebhook()
     data["embeds"][0] = embed;
     data["username"] = "☢️ TACTICAL NUKE INBOUND";
     data["avatar_url"] = "https://static.wikia.nocookie.net/callofduty/images/a/a9/Tactical_Nuke_inventory_icon_MW2.gif/revision/latest?cb=20121220062935";
-    req = httpPost("https://discord.com/api/webhooks/REDACTED", jsonSerialize(data, 0), headers);
+    req = httpPost("https://discord.com/api/webhooks/REDACTED/REDACTED", jsonSerialize(data, 0), headers);
     req waittill("done", result);
 }
 nukeCooldownLogic(duration)
