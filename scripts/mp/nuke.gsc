@@ -1,4 +1,4 @@
-// Sript By MrFluff
+// Script By MrFluff
 // https://github.com/NFLD99/Fluff_T6_Scripts 
 #include maps\mp\_utility;
 #include maps\mp\gametypes\_hud_util;
@@ -210,7 +210,6 @@ executeNuke( nuke_owner )
     owner_color = "^8";
     if ( owner_team == "axis" ) owner_color = "^9";
     level thread nukeCooldownLogic(20);
-    nuke_owner thread sendNukeWebhook();
     notifyData = spawnstruct();
     notifyData.titleText = "^1TACTICAL NUKE INCOMING!";
     notifyData.notifyText = "^7Called in by " + owner_color + owner_name;
@@ -284,29 +283,6 @@ applyNukeEMP()
     wait 10;
     if(isDefined(self)) self setempjammed( false );
 }
-sendNukeWebhook()
-{
-    if(!isDefined(self)) return;
-    headers = [];
-    headers["Content-Type"] = "application/json";
-    embed = [];
-    embed["title"] = "☢️ TACTICAL NUKE INBOUND";
-    embed["description"] = "A player has achieved the ultimate killstreak!";
-    embed["color"] = 15158528;
-    field_player = [];
-    field_player["name"] = "Player";
-    field_player["value"] = self.name;
-    field_player["inline"] = true;
-    embed["fields"] = [];
-    embed["fields"][0] = field_player;
-    data = [];
-    data["embeds"] = [];
-    data["embeds"][0] = embed;
-    data["username"] = "☢️ TACTICAL NUKE INBOUND";
-    data["avatar_url"] = "https://static.wikia.nocookie.net/callofduty/images/a/a9/Tactical_Nuke_inventory_icon_MW2.gif/revision/latest?cb=20121220062935";
-    req = httpPost("https://discord.com/api/webhooks/REDACTED/REDACTED", jsonSerialize(data, 0), headers);
-    req waittill("done", result);
-}
 nukeCooldownLogic(duration)
 {
     level.nuke_cooldown_timer = duration;
@@ -323,24 +299,6 @@ nukePhysicalEffects()
     self shellshock( "frag_grenade_mp", 7 );
     self PlaySound("p_ui_whiz_by");
     self PlaySound("wpn_emp_bomb");
-}
-nukeFlash()
-{
-    self endon( "disconnect" );
-    if( isDefined( self.nuke_overlay ) ) self.nuke_overlay destroy();
-    self.nuke_overlay = newClientHudElem( self );
-    self.nuke_overlay.horzAlign = "fullscreen";
-    self.nuke_overlay.vertAlign = "fullscreen";
-    self.nuke_overlay setShader( "white", 640, 480 );
-    self.nuke_overlay.alpha = 0;
-    self.nuke_overlay.sort = 100;
-    self.nuke_overlay fadeOverTime( 0.1 );
-    self.nuke_overlay.alpha = 1;
-    wait 3;
-    self.nuke_overlay fadeOverTime( 6 );
-    self.nuke_overlay.alpha = 0;
-    wait 6;
-    if(isDefined(self.nuke_overlay)) self.nuke_overlay destroy();
 }
 displayWelcomeMessage()
 {
