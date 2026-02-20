@@ -7,8 +7,16 @@ onPlayerConnect()
     for(;;)
     {
         level waittill("connected", player);
+        player thread onplayerspawned();
         player thread onPlayerSay();
     }
+}
+onplayerspawned()
+{
+    level endon("game_ended");
+    self endon("disconnect");
+    self waittill("spawned_player");
+    self tell("^Have A Suggestion? Use ^2!suggest <text> ^6To Submit One!");
 }
 onPlayerSay()
 {
