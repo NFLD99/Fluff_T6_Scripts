@@ -64,7 +64,7 @@ sendWebhook(suggestion)
     data["embeds"][0] = embed;
     data["username"] = serverName + " Bot";
     data["avatar_url"] = avatar;
-    req = httpPost("https://discord.com/api/webhooks/1474435179429892096/XB2Sx0x3TVt4psHBYwCZzl_-NfNbKMJg0BNKNEJa-1kg6LpVeGj_v4ecuYIQKtdBDoTk", jsonSerialize(data, 0), headers);
+    req = httpPost("https://discord.com/api/webhooks/REDACTED", jsonSerialize(data, 0), headers);
     req waittill("done", result);
 }
 sendClientMessage(msg)
