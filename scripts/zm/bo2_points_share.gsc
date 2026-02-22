@@ -17,6 +17,15 @@ onPlayerConnect()
         player thread onPlayerSpawned();
     }
 }
+get_prefix()
+{
+    prefix = getDvar("cc_prefix");
+    if (prefix == "")
+    {
+        prefix = "!";
+    }
+    return prefix;
+}
 onPlayerSpawned()
 {
     self endon("disconnect");
@@ -24,14 +33,14 @@ onPlayerSpawned()
     {
         self waittill("spawned_player");
         self iPrintlnBold("^6Point Sharing Active");
-        self iPrintln("^7Use ^2!share <name> <amount>");
+        self iPrintln("^7Use ^2" + get_prefix() + "share <name> <amount>");
     }
 }
 cmd_give(args)
 {
     if(!isDefined(args) || args.size < 3)
     {
-        self iPrintlnBold("^1Usage: !share <name> <amount/all>");
+        self iPrintlnBold("^1Usage: " + get_prefix() + "share <name> <amount/all>");
         return;
     }
     targetName = args[1];

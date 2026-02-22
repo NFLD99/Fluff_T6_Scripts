@@ -26,7 +26,7 @@ InitChatCommands()
 InitChatCommandsDvars()
 {
     SetDvarIfNotInitialized("cc_debug", 0);
-    SetDvarIfNotInitialized("cc_prefix", "!");
+    SetDvarIfNotInitialized("cc_prefix", "?");
     
     SetDvarIfNotInitialized("cc_permission_enabled", 1);
     SetDvarIfNotInitialized("cc_permission_mode", "name");

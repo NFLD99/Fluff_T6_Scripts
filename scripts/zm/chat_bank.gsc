@@ -41,6 +41,15 @@ init_bank()
     }
     self.pers["bank"] = int(readFile(path));
 }
+get_prefix()
+{
+    prefix = getDvar("cc_prefix");
+    if (prefix == "")
+    {
+        prefix = "!";
+    }
+    return prefix;
+}
 cmd_withdraw(args)
 {
     score_limit = 1000000;
@@ -50,12 +59,16 @@ cmd_withdraw(args)
         self iPrintlnBold("^6Score is already at max.");
         return;
     }
-    if (!isDefined(args) || args.size < 2) 
+    if (!isDefined(args) || args.size < 1) 
     {
-        self iPrintlnBold("^1Usage: !w <amount/all>");
+        self iPrintlnBold("^1Usage: " + get_prefix() + "w <amount/all>");
         return;
     }
-    amt_input = args[1];
+    amt_input = args[0];
+    if(args.size >= 2 && args[0] == "w")
+    {
+        amt_input = args[1];
+    }
     withdraw_amt = (amt_input == "all") ? bank_val : int(amt_input);
     if (withdraw_amt <= 0) return;
     if (withdraw_amt > bank_val)
@@ -75,14 +88,19 @@ cmd_withdraw(args)
 cmd_deposit(args)
 {
     bank_val = int(self.pers["bank"]);
-    if (!isDefined(args) || args.size < 2)
+    if (!isDefined(args) || args.size < 1)
     {
-        self iPrintlnBold("^1Usage: !d <amount/all>");
+        self iPrintlnBold("^1Usage: " + get_prefix() + "d <amount/all>");
         return;
     }
-    amt_input = args[1];
+    amt_input = args[0];
+    if(args.size >= 2 && args[0] == "d")
+    {
+        amt_input = args[1];
+    }
     deposit_amt = (amt_input == "all") ? self.score : int(amt_input);
-    if (deposit_amt <= 0 || self.score < deposit_amt)
+    if (deposit_amt <= 0) return;
+    if (self.score < deposit_amt)
     {
         self iPrintlnBold("^6Not enough points.");
         return;
@@ -98,7 +116,8 @@ cmd_balance(args)
 }
 cmd_help(args)
 {
-    self iPrintlnBold("^2!w <amt> ^6| ^2!d <amt> ^6| ^2!b");
+    p = get_prefix();
+    self iPrintlnBold("^2" + p + "w <amt> ^6| ^2" + p + "d <amt> ^6| ^2" + p + "b");
 }
 update_file(val)
 {

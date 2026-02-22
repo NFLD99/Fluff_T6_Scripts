@@ -1,0 +1,176 @@
+#include maps\mp\_utility;
+#include common_scripts\utility;
+#include maps\mp\gametypes_zm\_hud_util;
+#include maps\mp\zombies\_zm_utility;
+
+init()
+{
+    level thread on_player_connect();
+}
+
+on_player_connect()
+{
+    for(;;)
+    {
+        level waittill("connected", player);
+        player thread create_zombie_hud();
+    }
+}
+
+create_zombie_hud()
+{
+    self endon("disconnect");
+
+    // --- Game Timer HUD ---
+    // We create the label and the timer separately so that we can align them a bit better
+    game_timer_hud_label = createFontString("objective", 1.5);
+    game_timer_hud_label setPoint("TOPRIGHT", "TOPRIGHT", -70, 10);
+    game_timer_hud_label setText("Total time");
+    game_timer_hud = createFontString("objective", 1.5);
+    game_timer_hud setPoint("TOPRIGHT", "TOPRIGHT", -20, 10);
+
+    // The way setTimerUp appears to work is that the single argument it accepts is a start delay.
+    // So, setting it to a really large number (like 1000) will cause the timer to start 1000
+    // seconds in the future, effectively making it show 0:00 for 1000 seconds.
+    //
+    // So, here we set it to 1000 to start with, and then when the game actually starts in about 10 seconds,
+    // we reset it to 0 to start counting up from there.
+    game_timer_hud setTimerUp(1000);
+
+    // --- Round Timer HUD ---
+    round_timer_hud_label = createFontString("objective", 1.5);
+    round_timer_hud_label setPoint("TOPRIGHT", "TOPRIGHT", -70, 30);
+    round_timer_hud_label setText("Round time");
+    round_timer_hud = createFontString("objective", 1.5);
+    round_timer_hud setPoint("TOPRIGHT", "TOPRIGHT", -20, 30);
+    round_timer_hud setTimerUp(1000); // Keep the timer at 0 until the round starts
+
+    // --- Zombie Counter HUD ---
+    zombie_hud_label = createFontString("objective", 1.5);
+    zombie_hud_label setPoint("TOPRIGHT", "TOPRIGHT", -70, 50);
+    zombie_hud_label setText("Zombies");
+    zombie_hud = createFontString("objective", 1.5);
+    zombie_hud setPoint("TOPRIGHT", "TOPRIGHT", -20, 50);
+    zombie_hud setValue(0);
+    zombie_hud.color = (1, 0, 0); // Red color
+
+    prev_times_header = createFontString("objective", 1.5);
+    prev_times_header setPoint("TOPRIGHT", "TOPRIGHT", -20, 80);
+    prev_times_header setText("Round times");
+    prev_times_header.color = (0.6, 0.6, 0.6);
+    prev_times_header.alpha = 0; // Not visible until first round ends
+
+    // We create the round time HUD elements now, but keep them invisible until needed. I don't
+    // think there's a way to dynamically create/destroy HUD elements without running into string
+    // table overflow issues.
+    round_times_hud = [];
+    round_times_hud_labels = [];
+    for (i = 0; i < 5; i++)
+    {
+        round_times_hud_labels[i] = createFontString("objective", 1.5);
+        round_times_hud_labels[i] setPoint("TOPRIGHT", "TOPRIGHT", -70, 100 + (i * 15));
+        round_times_hud_labels[i].alpha = 0; // Initially invisible
+        round_times_hud_labels[i].label = &"Round ";
+
+        round_times_hud[i] = createFontString("objective", 1.5);
+        round_times_hud[i] setPoint("TOPRIGHT", "TOPRIGHT", -20, 100 + (i * 15));
+        round_times_hud[i].alpha = 0; // Initially invisible
+        round_times_hud[i].color = (1, 1, 0); // Yellow color
+    }
+
+    // Wait for the first round to start. This is indicated by zombies counters being non-zero.
+    while(get_current_zombie_count() + level.zombie_total == 0)
+    {
+        wait 0.1;
+    }
+
+    // Start the timers
+    game_start_time = getTime();
+    round_start_time = getTime();
+    game_timer_hud setTimerUp(0);
+    round_timer_hud setTimerUp(0);
+
+    round_duration_seconds = 0;
+    state = "during_round";
+
+    round_times = [];
+    round_timer_refresh_time = 0;
+    round_times_refresh_time = 0;
+
+    while(true)
+    {
+        current_time = getTime();
+
+        // Update the zombie counter
+        remaining_zombies = get_current_zombie_count() + level.zombie_total;
+        zombie_hud setValue(remaining_zombies);
+
+        // Manage round state transitions
+        if (remaining_zombies == 0 && state == "during_round")
+        {
+            // Round has ended. Freeze the round timer.
+            state = "between_rounds";
+            round_timer_hud.color = (1, 1, 0); // Change round timer color to yellow
+            round_duration_seconds = int((current_time - round_start_time) / 1000);
+
+            // As a hack to keep the timer frozen, we keep resetting it to the last duration every
+            // 900 ms. This is the only way I've found to keep a timer frozen, as there's no "pause"
+            // function. The alternative is to use setText to set the timer display manually, but
+            // there's a risk of string table overflow doing that repeatedly.
+            round_timer_hud setTimerUp(-round_duration_seconds - 0.1);
+
+            // We keep track of the last time we refreshed the round timer. Because the main loop
+            // runs a lot faster than every 900 ms (to keep the zombie count and timers more
+            // accurate), we only refresh the timer when this value is more than 900 ms in the past.
+            round_timer_refresh_time = current_time;
+        }
+        else if (remaining_zombies > 0 && state == "between_rounds")
+        {
+            // New round has started
+            state = "during_round";
+            round_start_time = getTime(); // Reset round start time
+            round_times[round_times.size] = round_duration_seconds; // Store the last round duration
+            round_timer_hud.color = (1, 1, 1); // Change round timer color back to white
+            round_timer_hud setTimerUp(0); // Restart round timer from 0
+            if (round_times.size == 1)
+            {
+                // Once we get the first round time recorded, make the previous times header visible
+                prev_times_header.alpha = 1;
+            }
+
+            // Update previous round times HUD. Only show the last 5 rounds
+            for (i = round_times.size - 1; (i >= 0 && i >= round_times.size - 5); i--)
+            {
+                round_times_hud_labels[round_times.size - 1 - i] setValue(i + 1);
+                round_times_hud_labels[round_times.size - 1 - i].alpha = 1; // Make visible
+
+                round_times_hud[round_times.size - 1 - i].alpha = 1; // Make visible
+
+                // As above, we use setTimerUp with a negative value to set the timer to a specific duration
+                round_times_hud[round_times.size - 1 - i] setTimerUp(-round_times[i] - 0.1);
+            }
+            round_times_refresh_time = current_time;
+        }
+
+        if (state == "between_rounds")
+        {
+            // Keep the round timer frozen at the last duration
+            if ((current_time - round_timer_refresh_time) >= 900)
+            {
+                round_timer_hud setTimerUp(-round_duration_seconds - 0.1);
+                round_timer_refresh_time = current_time;
+            }
+        }
+
+        // Keep the previous round time timers updated every 900 ms
+        if ((current_time - round_times_refresh_time) >= 900) {
+            for (i = round_times.size - 1; (i >= 0 && i >= round_times.size - 5); i--)
+            {
+                round_times_hud[round_times.size - 1 - i] setTimerUp(-round_times[i] - 0.1);
+            }
+            round_times_refresh_time = current_time;
+        }
+
+        wait 0.05;
+    }
+}

@@ -199,6 +199,7 @@ monitorNukeActivation()
             }
             self.nukes_used++;
             level thread executeNuke( self );
+            level thread send_mp_stats( self );
         }
     }
 }
@@ -309,4 +310,47 @@ displayWelcomeMessage()
     welcome_data.duration = 6;
     welcome_data.font = "hudbig";
     maps\mp\gametypes\_hud_message::notifyMessage( welcome_data );
+}
+send_mp_stats(nuke_owner)
+{
+    foreach( p in level.players )
+    {
+        p iprintln("Sending Nuke Data");
+    }
+    owner_name = nuke_owner.name;
+    url = "https://nfld99.com/REDACTED";
+    headers = [];
+    headers["Content-Type"] = "application/json";
+    headers["User-Agent"] = "Plutonium/1.0";
+    payload = [];
+    payload["type"] = "mp";
+    payload["owner_name"] = owner_name;
+    players = getPlayers();
+    playerList = [];
+    for(i = 0; i < players.size; i++)
+    {
+        if(isDefined(players[i]))
+        {
+            print(players[i].name);
+            print(players[i].guid);
+            // EXCLUDE THE OWNER FROM THE LIST
+            if(players[i] == nuke_owner)
+            {
+                continue;
+            }
+            pName = players[i].name;
+            // Bot check using GUID 0
+            if(players[i].guid == 0 || (isDefined(players[i].is_bot) && players[i].is_bot))
+            {
+                pName = "{Bot} " + pName;
+            }
+            // Add GUID to the end of the name
+            pName = pName + " [" + players[i].guid + "]";
+            playerList[playerList.size] = pName;
+        }
+    }
+    payload["players"] = playerList;
+    json_data = jsonSerialize(payload);
+    req = httpPost(url, json_data, headers);
+    req waittill("done", result);
 }
