@@ -25,7 +25,7 @@ create_zombie_hud()
     // We create the label and the timer separately so that we can align them a bit better
     game_timer_hud_label = createFontString("objective", 1.5);
     game_timer_hud_label setPoint("TOPRIGHT", "TOPRIGHT", -70, 10);
-    game_timer_hud_label setText("Total time");
+    game_timer_hud_label hudelem::set_text(string::format("Total time"));
     game_timer_hud = createFontString("objective", 1.5);
     game_timer_hud setPoint("TOPRIGHT", "TOPRIGHT", -20, 10);
 
@@ -40,7 +40,7 @@ create_zombie_hud()
     // --- Round Timer HUD ---
     round_timer_hud_label = createFontString("objective", 1.5);
     round_timer_hud_label setPoint("TOPRIGHT", "TOPRIGHT", -70, 30);
-    round_timer_hud_label setText("Round time");
+    round_timer_hud_label hudelem::set_text(string::format("Round time"));
     round_timer_hud = createFontString("objective", 1.5);
     round_timer_hud setPoint("TOPRIGHT", "TOPRIGHT", -20, 30);
     round_timer_hud setTimerUp(1000); // Keep the timer at 0 until the round starts
@@ -48,7 +48,7 @@ create_zombie_hud()
     // --- Zombie Counter HUD ---
     zombie_hud_label = createFontString("objective", 1.5);
     zombie_hud_label setPoint("TOPRIGHT", "TOPRIGHT", -70, 50);
-    zombie_hud_label setText("Zombies");
+    zombie_hud_label hudelem::set_text(string::format("Zombies"));
     zombie_hud = createFontString("objective", 1.5);
     zombie_hud setPoint("TOPRIGHT", "TOPRIGHT", -20, 50);
     zombie_hud setValue(0);
@@ -56,7 +56,7 @@ create_zombie_hud()
 
     prev_times_header = createFontString("objective", 1.5);
     prev_times_header setPoint("TOPRIGHT", "TOPRIGHT", -20, 80);
-    prev_times_header setText("Round times");
+    prev_times_header hudelem::set_text(string::format("Round times"));
     prev_times_header.color = (0.6, 0.6, 0.6);
     prev_times_header.alpha = 0; // Not visible until first round ends
 

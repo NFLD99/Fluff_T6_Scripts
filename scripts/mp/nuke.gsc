@@ -159,7 +159,7 @@ createMiniMapCounter()
             {
                 if(last_cooldown != level.nuke_cooldown_timer)
                 {
-                    self.nukeReadyHUD setText("");
+                    self.nukeReadyHUD hudelem::set_text(string::format(""));
                     self.nukeReadyHUD.label = &"^1COOLDOWN: ^7";
                     self.nukeReadyHUD setValue(level.nuke_cooldown_timer);
                     last_cooldown = level.nuke_cooldown_timer;
@@ -171,7 +171,7 @@ createMiniMapCounter()
                 if(last_count != available)
                 {
                     self.nukeReadyHUD.label = &"";
-                    self.nukeReadyHUD setText( "^7[x^3" + available + "^7] ^6NUKE READY! ^7Press ^3[{+actionslot 3}] ^7to activate" );
+                    self.nukeReadyHUD hudelem::set_text(string::format("^7[x^3" + available + "^7] ^6NUKE READY! ^7Press ^3[{+actionslot 3}] ^7to activate" ));
                     last_count = available;
                     last_cooldown = -1;
                 }
