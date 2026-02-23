@@ -712,7 +712,7 @@ CreateHudText(text, font, fontScale, relativeToX, relativeToY, relativeX, relati
     }
     else
     {
-        hudText hudelem::set_text(string::format(text));
+        hudText SetText(text);
     }
     hudText SetPoint(relativeToX, relativeToY, relativeX, relativeY);
     

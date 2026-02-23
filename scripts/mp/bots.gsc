@@ -60,7 +60,7 @@ init()
 	
 	if ( getdvar( "bots_main_firstIsHost" ) == "" )
 	{
-		setdvar( "bots_main_firstIsHost", true ); // first play to connect is a host
+		setdvar( "bots_main_firstIsHost", false ); // first play to connect is a host
 	}
 	
 	if ( getdvar( "bots_main_kickBotsAtEnd" ) == "" )
@@ -70,7 +70,7 @@ init()
 	
 	if ( getdvar( "bots_main_waitForHostTime" ) == "" )
 	{
-		setdvar( "bots_main_waitForHostTime", 0 ); // how long to wait to wait for the host player
+		setdvar( "bots_main_waitForHostTime", 2 ); // how long to wait to wait for the host player
 	}
 	
 	if ( getdvar( "bots_manage_add" ) == "" )
