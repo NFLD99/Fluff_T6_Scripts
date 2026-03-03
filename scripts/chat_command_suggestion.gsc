@@ -1,9 +1,9 @@
 #include scripts\chat_commands;
 Init()
 {
-    CreateCommand(level.chat_commands["ports"], "suggest", "function", ::SuggestionCommand, 1);
-    CreateCommand(level.chat_commands["ports"], "s", "function", ::SuggestionCommand, 1);
-    CreateCommand(level.chat_commands["ports"], "suggestion", "function", ::SuggestionCommand, 1);
+    CreateCommand(level.chat_commands["ports"], "suggest", "function", ::SuggestionCommand, 0);
+    CreateCommand(level.chat_commands["ports"], "s", "function", ::SuggestionCommand, 0);
+    CreateCommand(level.chat_commands["ports"], "suggestion", "function", ::SuggestionCommand, 0);
 }
 /* Command section */
 SuggestionCommand(args)

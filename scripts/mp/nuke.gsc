@@ -267,7 +267,7 @@ executeNuke( nuke_owner )
         player dodamage(player.health + 1000, player.origin, nuke_owner, nuke_owner, "body", "MOD_EXPLOSIVE", 0, "killstreak_nuke_mp");
         foreach( p in level.players )
         {
-            p iprintln(owner_color + owner_name + " ^2Nuked " + victim_color + p_name);
+            p iprintln(owner_color + owner_name + " ^1Nuked " + victim_color + p_name);
         }
     }
     wait 0.5;

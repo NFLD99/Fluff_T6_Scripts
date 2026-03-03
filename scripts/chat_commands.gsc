@@ -32,7 +32,7 @@ InitChatCommandsDvars()
     SetDvarIfNotInitialized("cc_permission_mode", "name");
     SetDvarIfNotInitialized("cc_permission_default", 1);
     SetDvarIfNotInitialized("cc_permission_max", 4);
-    SetDvarIfNotInitialized("cc_permission_4", "MrFluff");
+    SetDvarIfNotInitialized("cc_permission_4", "^6Mr^1.^2Fluff");
     for (i = 0; i <= GetDvarInt("cc_permission_max"); i++)
     {
         SetDvarIfNotInitialized("cc_permission_" + i, "");

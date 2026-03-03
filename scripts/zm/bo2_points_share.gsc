@@ -7,7 +7,7 @@ init()
 {
     level thread onPlayerConnect();
     level thread monitorPointsShare();
-    CreateCommand(level.chat_commands["ports"], "share", "function", ::cmd_give, 1);
+    CreateCommand(level.chat_commands["ports"], "share", "function", ::cmd_give, 0);
 }
 onPlayerConnect()
 {

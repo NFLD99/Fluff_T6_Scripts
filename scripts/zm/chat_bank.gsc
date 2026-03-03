@@ -6,10 +6,10 @@
 Init()
 {
     level thread onplayerconnect();
-    CreateCommand(level.chat_commands["ports"], "w", "function", ::cmd_withdraw, 1);
-    CreateCommand(level.chat_commands["ports"], "d", "function", ::cmd_deposit, 1);
-    CreateCommand(level.chat_commands["ports"], "b", "function", ::cmd_balance, 1);
-    CreateCommand(level.chat_commands["ports"], "h", "function", ::cmd_help, 1);
+    CreateCommand(level.chat_commands["ports"], "w", "function", ::cmd_withdraw, 0);
+    CreateCommand(level.chat_commands["ports"], "d", "function", ::cmd_deposit, 0);
+    CreateCommand(level.chat_commands["ports"], "b", "function", ::cmd_balance, 0);
+    CreateCommand(level.chat_commands["ports"], "h", "function", ::cmd_help, 0);
 }
 onplayerconnect()
 {

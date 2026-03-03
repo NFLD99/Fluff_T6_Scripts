@@ -59,17 +59,17 @@ InitDvars()
     }
     else
     {
-        SetDvarIfNotInitialized("mapvote_maps", "Bus Depot,Bus Depot,zm_standard_transit:Town,Town,zm_standard_town:Farm,Farm,zm_standard_farm:Mob of The Dead,Mob of The Dead,zm_classic_prison:Nuketown,Nuketown,zm_standard_nuked:Origins,Origins,zm_classic_tomb:Buried,Buried,zm_classic_processing:Die Rise,Die Rise,zm_classic_rooftop");
-        SetDvarIfNotInitialized("mapvote_default_rotation_maps", "Bus Depot,Bus Depot,zm_standard_transit:Town,Town,zm_standard_town:Farm,Farm,zm_standard_farm:Mob of The Dead,Mob of The Dead,zm_classic_prison:Nuketown,Nuketown,zm_standard_nuked:Origins,Origins,zm_classic_tomb:Buried,Buried,zm_classic_processing:Die Rise,Die Rise,zm_classic_rooftop");
+        SetDvarIfNotInitialized("mapvote_maps", "Tranzit,Tranzit,zm_classic_transit:Bus Depot,Bus Depot,zm_standard_transit:Town,Town,zm_standard_town:Farm,Farm,zm_standard_farm,Buried,Buried,zm_classic_processing:Die Rise,Die Rise,zm_classic_rooftop:Mob of The Dead,Mob of The Dead,zm_classic_prison:Nuketown,Nuketown,zm_standard_nuked:Origins,Origins,zm_classic_tomb");
+        SetDvarIfNotInitialized("mapvote_default_rotation_maps", "Tranzit,Tranzit,zm_classic_transit:Bus Depot,Bus Depot,zm_standard_transit:Town,Town,zm_standard_town:Farm,Farm,zm_standard_farm,Buried,Buried,zm_classic_processing:Die Rise,Die Rise,zm_classic_rooftop:Mob of The Dead,Mob of The Dead,zm_classic_prison:Nuketown,Nuketown,zm_standard_nuked:Origins,Origins,zm_classic_tomb,Buried (Turned),Buried,zm_cleansed_street:Diner (Turned),Diner,zm_cleansed_diner");
     }
     
-    SetDvarIfNotInitialized("mapvote_limits_max", 12);
-    SetDvarIfNotInitialized("mapvote_colors_selected", "blue");
+    SetDvarIfNotInitialized("mapvote_limits_max", 10);
+    SetDvarIfNotInitialized("mapvote_colors_selected", "purple");
     SetDvarIfNotInitialized("mapvote_colors_unselected", "white");
-    SetDvarIfNotInitialized("mapvote_colors_timer", "blue");
+    SetDvarIfNotInitialized("mapvote_colors_timer", "green");
     SetDvarIfNotInitialized("mapvote_colors_timer_low", "red");
     SetDvarIfNotInitialized("mapvote_colors_help_text", "white");
-    SetDvarIfNotInitialized("mapvote_colors_help_accent", "blue");
+    SetDvarIfNotInitialized("mapvote_colors_help_accent", "green");
     SetDvarIfNotInitialized("mapvote_colors_help_accent_mode", "standard");
     SetDvarIfNotInitialized("mapvote_vote_time", 30);
     SetDvarIfNotInitialized("mapvote_blur_level", 2.5);
