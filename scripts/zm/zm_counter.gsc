@@ -9,15 +9,13 @@ init()
 }
 setupFeatures()
 {
-	setdvar("r_fog", 0);
-	setdvar("r_fog_disable", 1);
 	level thread drawZombiesCounter();
 }
 drawZombiesCounter()
 {
 	zombiesCounter = createServerFontString("objective", 1.4);
 	zombiesCounter setPoint("BOTTOM RIGHT", "BOTTOM RIGHT", 0, 0, 0.5);
-	zombiesCounter.label = &"Zombies: ^1";
+	zombiesCounter.label = &"^2Zombies: ^6";
 	zombiesCounter.x = zombiesCounter.x - 50;
 	zombiesCounter.hideWhenInMenu = 1;
 	zombiesCounter.archived = 0;
