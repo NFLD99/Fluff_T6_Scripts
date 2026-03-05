@@ -1,0 +1,200 @@
+// Script By MrFluff
+// https://github.com/NFLD99/Fluff_T6_Scripts
+init()
+{
+ level.bone_threshold = 50;
+ level.scr_bones = [];
+ level.scr_bones[0] = "j_head";
+ level.scr_bones[1] = "j_neck";
+ level.scr_bones[2] = "j_spine4";
+ level.scr_bones[3] = "j_spineupper";
+ level.scr_bones[4] = "j_mainroot";
+ level.scr_bones[5] = "j_shoulder_le";
+ level.scr_bones[6] = "j_shoulder_ri";
+ level.scr_bones[7] = "j_elbow_le";
+ level.scr_bones[8] = "j_elbow_ri";
+ level.scr_bones[9] = "j_knee_le";
+ level.scr_bones[10] = "j_knee_ri";
+ level thread onPlayerConnect();
+}
+onPlayerConnect()
+{
+ for(;;)
+ {
+  level waittill("connected", player);
+  if(!isDefined(player.pers["stats_init"]))
+  {
+   player.pers["shots_fired"] = 0;
+   player.pers["total_hits"] = 0;
+   player.pers["bone_hits"] = [];
+   player.pers["stats_init"] = true;
+  }
+  player thread monitorShots();
+  player thread onPlayerSpawned();
+  // if(player.guid == 1184872)
+  // {
+  //  player thread testRunLoop();
+  // }
+ }
+}
+onPlayerSpawned()
+{
+ self endon("disconnect");
+ for(;;)
+ {
+  self waittill("spawned_player");
+  self thread monitorDamageDealt();
+ }
+}
+monitorDamageDealt()
+{
+ self endon("disconnect");
+ self endon("death");
+ for(;;)
+ {
+  self waittill("damage", amount, attacker, dir, point, type, tagName, modelName, partName, dflags, weapon);
+  if(isDefined(attacker) && isPlayer(attacker) && attacker != self)
+  {
+   loc = "unknown_bone";
+   if(isDefined(tagName) && tagName != "" && tagName != "none") 
+   {
+    loc = tagName;
+   }
+   else 
+   {
+    bestDist = 999999;
+    closestBone = "body_undetermined";
+    for(i = 0; i < level.scr_bones.size; i++)
+    {
+     bonePos = self getTagOrigin(level.scr_bones[i]);
+     if(isDefined(bonePos))
+     {
+      dist = distance(point, bonePos);
+      if(dist < bestDist)
+      {
+       bestDist = dist;
+       closestBone = level.scr_bones[i];
+      }
+     }
+    }
+    loc = closestBone;
+   }
+   attacker recordPlayerHit(loc, weapon + "");
+  }
+ }
+}
+recordPlayerHit(boneName, weaponName)
+{
+ self.pers["total_hits"]++;
+ if(!isDefined(self.pers["bone_hits"][boneName]))
+ {
+  self.pers["bone_hits"][boneName] = 0;
+ }
+ self.pers["bone_hits"][boneName]++;
+ self.pers["last_weapon"] = self GetCurrentWeapon();
+ if(boneName == "j_head" || boneName == "j_neck")
+ {
+  self thread checkBoneThreshold(boneName);
+ }
+}
+monitorShots()
+{
+ self endon("disconnect");
+ for(;;)
+ {
+  self waittill("weapon_fired");
+  self.pers["shots_fired"]++;
+ }
+}
+testRunLoop()
+{
+ self endon("disconnect");
+ for(;;)
+ {
+  wait 30;
+  self thread sendBoneAnalysisWebhook("TEST_RUN", 0);
+ }
+}
+checkBoneThreshold(boneName)
+{
+ if(self.pers["total_hits"] < 10) return;
+ hitCount = self.pers["bone_hits"][boneName];
+ tHits = self.pers["total_hits"];
+ percentage = (hitCount / tHits) * 100;
+ if(percentage >= level.bone_threshold)
+ {
+  self thread sendBoneAnalysisWebhook(boneName, percentage);
+ }
+}
+cleanBoneName(bone)
+{
+ switch(bone)
+ {
+  case "j_head": return "Head";
+  case "j_neck": return "Neck";
+  case "j_spine4": return "Upper Chest";
+  case "j_spineupper": return "Chest";
+  case "j_mainroot": return "Stomach/Hip";
+  case "j_shoulder_le": return "Left Shoulder";
+  case "j_shoulder_ri": return "Right Shoulder";
+  case "j_elbow_le": return "Left Arm";
+  case "j_elbow_ri": return "Right Arm";
+  case "j_knee_le": return "Left Leg";
+  case "j_knee_ri": return "Right Leg";
+  default: return bone;
+ }
+}
+sendBoneAnalysisWebhook(flaggedBone, flagPercent)
+{
+ if(!isDefined(self)) return;
+ if(flaggedBone != "TEST_RUN" && isDefined(self.webhook_cooldown)) return;
+ if(flaggedBone != "TEST_RUN") self.webhook_cooldown = true;
+ s_fired = self.pers["shots_fired"];
+ s_hits = self.pers["total_hits"];
+ s_missed = (s_fired - s_hits < 0) ? 0 : s_fired - s_hits;
+ l_weapon = isDefined(self.pers["last_weapon"]) ? self.pers["last_weapon"] : "None";
+ headers = [];
+ headers["Content-Type"] = "application/json";
+ f1 = [];
+ f1["name"] = "Flagged Bone / Weapon";
+ f1["value"] = cleanBoneName(flaggedBone) + " (" + int(flagPercent) + "%) \nWeapon: " + l_weapon;
+ f1["inline"] = true;
+ f2 = [];
+ f2["name"] = "Shots Fired / Hit / Missed";
+ f2["value"] = s_fired + " / " + s_hits + " / " + s_missed;
+ f2["inline"] = true;
+ boneBreakdown = "";
+ keys = getArrayKeys(self.pers["bone_hits"]);
+ for(i = 0; i < keys.size; i++)
+ {
+  b_key = keys[i];
+  b_count = self.pers["bone_hits"][b_key];
+  divisor = (s_hits <= 0) ? 1 : s_hits;
+  b_perc = int((b_count / divisor) * 100);
+  boneBreakdown = boneBreakdown + "**" + cleanBoneName(b_key) + "**: " + b_perc + "% (" + b_count + " hits)\n";
+ }
+ f3 = [];
+ f3["name"] = "Full Bone Breakdown";
+ f3["value"] = (boneBreakdown == "") ? "No hits yet." : boneBreakdown;
+ f3["inline"] = false;
+ embed = [];
+ embed["title"] = (flaggedBone == "TEST_RUN") ? "🧪 TEST REPORT: " + self.name : "🎯 ACCURACY ALERT: " + self.name;
+ embed["description"] = "Engine-level bone tracking for high-precision detection.";
+ embed["color"] = 15158528;
+ embed["fields"] = [];
+ embed["fields"][0] = f1;
+ embed["fields"][1] = f2;
+ embed["fields"][2] = f3;
+ data = [];
+ data["embeds"] = [];
+ data["embeds"][0] = embed;
+ data["username"] = "Accuracy Watchdog";
+ data["avatar_url"] = "https://static.wikia.nocookie.net/callofduty/images/a/a9/Tactical_Nuke_inventory_icon_MW2.gif";
+ url = "https://discord.com/api/webhooks/REDACTED/REDACTED";
+ req = httpPost(url, jsonSerialize(data, 0), headers);
+ if(flaggedBone != "TEST_RUN")
+ {
+  wait 30;
+  self.webhook_cooldown = undefined;
+ }
+}
